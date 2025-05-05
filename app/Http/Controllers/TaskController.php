@@ -1,0 +1,98 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Requests\Task\UpdateTaskRequest;
+use App\Http\Resources\Task\TaskResource;
+use App\Services\TaskService;
+
+class TaskController extends Controller
+{
+    public function __construct(protected TaskService $service) {}
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $data = TaskResource::collection($this->service->all());
+
+        return response()->json($data);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreTaskRequest $request)
+    {
+        try {
+            $this->service->store($request->validated());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Task created successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Failed to store task data.'),
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $task = $this->service->getById($id);
+
+        return new TaskResource($task);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateTaskRequest $request, string $id)
+    {
+        try {
+            $this->service->update($id, $request->validated());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Task updated successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Failed to update task data.'),
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        try {
+            $this->service->destroy($id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Task deleted successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Failed to delete task data.'),
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+}
