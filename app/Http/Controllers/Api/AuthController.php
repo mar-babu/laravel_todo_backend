@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,7 +35,7 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
 
@@ -56,7 +55,7 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
 
-            if (!$user || !Hash::check($request->password, Hash::make($request->password))) {
+            if (! $user || ! Hash::check($request->password, Hash::make($request->password))) {
                 return response()->json(['status' => false, 'message' => 'Invalid credentials.'], 401);
             }
 
@@ -69,7 +68,7 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
-                'message' => $th->getMessage()
+                'message' => $th->getMessage(),
             ], 500);
         }
 
