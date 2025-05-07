@@ -6,9 +6,13 @@ use App\Models\Task;
 
 class TaskService
 {
-    public function all()
+    public function all(array $filters = [])
     {
         $query = Task::query();
+
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
 
         return $query->orderBy('id', 'desc')->get();
     }

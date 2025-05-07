@@ -6,6 +6,8 @@ use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskResource;
 use App\Services\TaskService;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class TaskController extends Controller
 {
@@ -14,9 +16,9 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = TaskResource::collection($this->service->all());
+        $data = TaskResource::collection($this->service->all($request->all()));
 
         return response()->json($data);
     }
