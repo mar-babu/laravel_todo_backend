@@ -8,7 +8,7 @@ class TaskService
 {
     public function all(array $filters = [])
     {
-        $query = Task::query();
+        $query = Task::where('user_id', auth()->id());
 
         if (isset($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -19,7 +19,7 @@ class TaskService
 
     public function getById(int $id)
     {
-        return Task::find($id);
+        return Task::where('user_id', auth()->id())->findOrFail($id);
     }
 
     public function store(array $data)
@@ -34,7 +34,12 @@ class TaskService
 
     private function save(array $data, ?int $id = null)
     {
+        if (!auth()->check()) {
+            abort(401, 'Unauthenticated');
+        }
+
         $task = Task::findOrNew($id);
+        $data['user_id'] = auth()->id();
         $task->fill($data);
         $task->save();
 
@@ -43,7 +48,11 @@ class TaskService
 
     public function destroy(int $id): void
     {
-        $task = Task::findOrFail($id);
+        $task = Task::where('user_id', auth()->id())->findOrFail($id);
+
+        if (!$task) {
+            abort(404, 'Not found');
+        }
 
         $task->delete();
     }
