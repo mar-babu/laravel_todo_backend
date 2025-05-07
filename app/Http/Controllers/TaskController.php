@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TaskStatus;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskResource;
+use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
@@ -96,5 +98,21 @@ class TaskController extends Controller
             ], 500);
         }
 
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $data = $request->validate([
+            'status' => ['required', new Enum(TaskStatus::class)]
+        ]);
+
+        Task::where('id', $id)->update([
+            'status' => $data['status'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task status updated successfully.',
+        ]);
     }
 }
