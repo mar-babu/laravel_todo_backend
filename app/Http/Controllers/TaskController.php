@@ -63,11 +63,12 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, string $id)
     {
         try {
-            $this->service->update($id, $request->validated());
+            $task = $this->service->update($id, $request->validated());
 
             return response()->json([
                 'success' => true,
                 'message' => 'Task updated successfully.',
+                'data' => new TaskResource($task)
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
