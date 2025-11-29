@@ -34,7 +34,7 @@ class TaskService
 
     private function save(array $data, ?int $id = null)
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             abort(401, 'Unauthenticated');
         }
 
@@ -50,7 +50,7 @@ class TaskService
     {
         $task = Task::where('user_id', auth()->id())->findOrFail($id);
 
-        if (!$task) {
+        if (! $task) {
             abort(404, 'Not found');
         }
 
