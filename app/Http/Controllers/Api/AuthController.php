@@ -81,13 +81,13 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'You have successfully logged out.'
+                'message' => 'You have successfully logged out.',
             ]);
 
         } catch (\Exception $ex) {
             return response()->json([
                 'status' => false,
-                'message' => 'Logout failed: ' . $ex->getMessage()
+                'message' => 'Logout failed: '.$ex->getMessage(),
             ], 500);
         }
     }

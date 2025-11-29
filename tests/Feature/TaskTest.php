@@ -27,7 +27,7 @@ class TaskTest extends TestCase
         $response = $this->postJson('/api/tasks', [
             'name' => 'Test Task',
             'description' => 'Test Description',
-            'status' => TaskStatus::PENDING->value
+            'status' => TaskStatus::PENDING->value,
         ]);
 
         $response->assertCreated()
@@ -36,7 +36,7 @@ class TaskTest extends TestCase
         $this->assertDatabaseHas('tasks', [
             'name' => 'Test Task',
             'description' => 'Test Description',
-            'status' => TaskStatus::PENDING->value
+            'status' => TaskStatus::PENDING->value,
         ]);
     }
 
@@ -44,7 +44,7 @@ class TaskTest extends TestCase
     public function task_creation_requires_name_and_description()
     {
         $response = $this->postJson('/api/tasks', [
-            'status' => TaskStatus::PENDING->value
+            'status' => TaskStatus::PENDING->value,
         ]);
 
         $response->assertUnprocessable()
@@ -64,8 +64,8 @@ class TaskTest extends TestCase
                     'id',
                     'name',
                     'description',
-                    'status'
-                ]
+                    'status',
+                ],
             ]);
     }
 
@@ -88,17 +88,17 @@ class TaskTest extends TestCase
         $response = $this->putJson("/api/tasks/{$task->id}", [
             'name' => 'Updated Task',
             'description' => 'Updated Description',
-            'status' => TaskStatus::COMPLETED->value
+            'status' => TaskStatus::COMPLETED->value,
         ]);
 
         $response->assertStatus(201)
-        ->assertJson(['success' => true]);
+            ->assertJson(['success' => true]);
 
         $this->assertDatabaseHas('tasks', [
             'id' => $task->id,
             'name' => 'Updated Task',
             'description' => 'Updated Description',
-            'status' => TaskStatus::COMPLETED->value
+            'status' => TaskStatus::COMPLETED->value,
         ]);
     }
 
@@ -107,11 +107,11 @@ class TaskTest extends TestCase
     {
         $task = Task::factory()->create([
             'user_id' => $this->user->id,
-            'status' => TaskStatus::PENDING
+            'status' => TaskStatus::PENDING,
         ]);
 
         $response = $this->putJson("/api/tasks/{$task->id}/status", [
-            'status' => TaskStatus::COMPLETED->value
+            'status' => TaskStatus::COMPLETED->value,
         ]);
 
         $response->assertOk()
@@ -132,5 +132,4 @@ class TaskTest extends TestCase
 
         $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
     }
-
 }

@@ -68,7 +68,7 @@ class TaskController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Task updated successfully.',
-                'data' => new TaskResource($task)
+                'data' => new TaskResource($task),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
@@ -104,7 +104,7 @@ class TaskController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $data = $request->validate([
-            'status' => ['required', new Enum(TaskStatus::class)]
+            'status' => ['required', new Enum(TaskStatus::class)],
         ]);
 
         Task::where('id', $id)->update([
