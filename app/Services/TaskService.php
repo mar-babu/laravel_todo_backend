@@ -38,8 +38,13 @@ class TaskService
             abort(401, 'Unauthenticated');
         }
 
-        $task = Task::findOrNew($id);
-        $data['user_id'] = auth()->id();
+        if ($id) {
+            $task = Task::where('user_id', auth()->id())->findOrFail($id);
+        } else {
+            $task = new Task();
+            $data['user_id'] = auth()->id();
+        }
+
         $task->fill($data);
         $task->save();
 

@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Enums\TaskStatus;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
+use App\Http\Requests\Task\UpdateTaskStatusRequest;
+use App\Http\Requests\Task\UpdateTaskPriorityRequest;
 use App\Http\Resources\Task\TaskResource;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules\Enum;
 
 class TaskController extends Controller
 {
@@ -101,19 +102,23 @@ class TaskController extends Controller
 
     }
 
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(UpdateTaskStatusRequest $request, $id)
     {
-        $data = $request->validate([
-            'status' => ['required', new Enum(TaskStatus::class)],
-        ]);
-
-        Task::where('id', $id)->update([
-            'status' => $data['status'],
-        ]);
+        $this->service->update($id, $request->validated());
 
         return response()->json([
             'success' => true,
             'message' => 'Task status updated successfully.',
+        ]);
+    }
+
+    public function updatePriority(UpdateTaskPriorityRequest $request, $id)
+    {
+        $this->service->update($id, $request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task priority updated successfully.',
         ]);
     }
 }

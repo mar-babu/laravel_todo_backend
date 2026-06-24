@@ -20,6 +20,8 @@ class TaskResource extends JsonResource
             'description' => $this->description,
             'status' => $this->status->value,
             'status_name' => $this->status->getLabel(),
+            'priority' => $this->priority->value,
+            'priority_name' => $this->priority->getLabel(),
         ];
     }
 }

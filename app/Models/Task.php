@@ -15,10 +15,11 @@ class Task extends Model
         'name',
         'description',
         'status',
+        'priority',
     ];
 
     protected $casts = [
         'status' => TaskStatus::class,
-
+        'priority' => \App\Enums\TaskPriority::class,
     ];
 }

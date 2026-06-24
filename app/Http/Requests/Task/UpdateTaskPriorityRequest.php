@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Task;
 
-use App\Enums\TaskStatus;
+use App\Enums\TaskPriority;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
-class StoreTaskRequest extends FormRequest
+class UpdateTaskPriorityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,10 +24,7 @@ class StoreTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:200',
-            'description' => 'required|string|max:400',
-            'status' => ['nullable', new Enum(TaskStatus::class)],
-            'priority' => ['nullable', new Enum(\App\Enums\TaskPriority::class)],
+            'priority' => ['required', new Enum(TaskPriority::class)],
         ];
     }
 }

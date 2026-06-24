@@ -16,6 +16,7 @@ class TaskFactory extends Factory
             'name' => $this->faker->sentence(),
             'description' => $this->faker->paragraph(),
             'status' => TaskStatus::PENDING,
+            'priority' => fake()->randomElement(\App\Enums\TaskPriority::cases()),
             'user_id' => \App\Models\User::factory(),
         ];
     }

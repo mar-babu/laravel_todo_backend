@@ -27,6 +27,7 @@ class UpdateTaskRequest extends FormRequest
             'name' => 'required|string|max:200',
             'description' => 'required|string|max:400',
             'status' => ['nullable', new Enum(TaskStatus::class)],
+            'priority' => ['nullable', new Enum(\App\Enums\TaskPriority::class)],
         ];
     }
 }
