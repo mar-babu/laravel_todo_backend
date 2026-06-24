@@ -116,4 +116,20 @@ class TaskController extends Controller
             'message' => 'Task status updated successfully.',
         ]);
     }
+
+    public function updatePriority(Request $request, $id)
+    {
+        $data = $request->validate([
+            'priority' => ['required', new Enum(\App\Enums\TaskPriority::class)],
+        ]);
+
+        Task::where('id', $id)->update([
+            'priority' => $data['priority'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Task priority updated successfully.',
+        ]);
+    }
 }
