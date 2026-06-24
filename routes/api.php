@@ -15,6 +15,7 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::put('/tasks/reorder', [TaskController::class, 'reorder']);
     Route::put('/tasks/{task}/status', [TaskController::class, 'updateStatus']);
     Route::put('/tasks/{task}/priority', [TaskController::class, 'updatePriority']);
     Route::apiResource('tasks', TaskController::class)->except(['create', 'edit']);

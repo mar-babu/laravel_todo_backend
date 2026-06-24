@@ -7,6 +7,7 @@ use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Requests\Task\UpdateTaskStatusRequest;
 use App\Http\Requests\Task\UpdateTaskPriorityRequest;
+use App\Http\Requests\Task\ReorderTasksRequest;
 use App\Http\Resources\Task\TaskResource;
 use App\Models\Task;
 use App\Services\TaskService;
@@ -119,6 +120,16 @@ class TaskController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Task priority updated successfully.',
+        ]);
+    }
+
+    public function reorder(ReorderTasksRequest $request)
+    {
+        $this->service->reorder($request->validated()['tasks']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tasks reordered successfully.',
         ]);
     }
 }
