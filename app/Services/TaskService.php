@@ -14,7 +14,7 @@ class TaskService
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('id', 'desc')->get();
+        return $query->orderBy('priority', 'desc')->orderBy('id', 'desc')->get();
     }
 
     public function getById(int $id)
