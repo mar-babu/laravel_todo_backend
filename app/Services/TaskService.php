@@ -14,7 +14,7 @@ class TaskService
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('priority', 'desc')->orderBy('id', 'desc')->get();
+        return $query->orderBy('position', 'asc')->orderBy('priority', 'desc')->orderBy('id', 'desc')->get();
     }
 
     public function getById(int $id)
@@ -30,6 +30,16 @@ class TaskService
     public function update(int $id, array $data)
     {
         return $this->save($data, $id);
+    }
+
+    public function reorder(array $tasks): void
+    {
+        $userId = auth()->id();
+        foreach ($tasks as $taskData) {
+            Task::where('id', $taskData['id'])
+                ->where('user_id', $userId)
+                ->update(['position' => $taskData['position']]);
+        }
     }
 
     private function save(array $data, ?int $id = null)
