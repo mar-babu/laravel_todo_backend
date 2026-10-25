@@ -21,6 +21,18 @@ class TaskService
             $query->where('status', $filters['status']);
         }
 
+        if (isset($filters['priority'])) {
+            $query->where('priority', $filters['priority']);
+        }
+
+        if (! empty($filters['search'])) {
+            $search = trim((string) $filters['search']);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
         $perPage = min((int) ($filters['per_page'] ?? self::DEFAULT_PER_PAGE), self::MAX_PER_PAGE);
         $perPage = $perPage > 0 ? $perPage : self::DEFAULT_PER_PAGE;
 
@@ -33,13 +45,27 @@ class TaskService
 
         return [
             'tasks' => $tasks,
-            'counts' => $this->counts($userId),
+            'counts' => $this->counts($userId, $filters),
         ];
     }
 
-    private function counts(int $userId): array
+    private function counts(int $userId, array $filters): array
     {
-        $counts = Task::where('user_id', $userId)
+        $query = Task::where('user_id', $userId);
+
+        if (isset($filters['priority'])) {
+            $query->where('priority', $filters['priority']);
+        }
+
+        if (! empty($filters['search'])) {
+            $search = trim((string) $filters['search']);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $counts = $query
             ->selectRaw('status, count(*) as aggregate')
             ->groupBy('status')
             ->pluck('aggregate', 'status');

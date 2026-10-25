@@ -22,7 +22,7 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $result = $this->service->all($request->only(['status', 'page', 'per_page']));
+        $result = $this->service->all($request->only(['status', 'priority', 'search', 'page', 'per_page']));
         $tasks = $result['tasks'];
 
         return response()->json([
