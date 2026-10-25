@@ -2,19 +2,83 @@
 
 namespace App\Services;
 
+use App\Enums\TaskStatus;
 use App\Models\Task;
 
 class TaskService
 {
-    public function all(array $filters = [])
+    private const DEFAULT_PER_PAGE = 15;
+
+    private const MAX_PER_PAGE = 100;
+
+    public function all(array $filters = []): array
     {
-        $query = Task::where('user_id', auth()->id());
+        $userId = auth()->id();
+
+        $query = Task::where('user_id', $userId);
 
         if (isset($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('position', 'asc')->orderBy('priority', 'desc')->orderBy('id', 'desc')->get();
+        if (isset($filters['priority'])) {
+            $query->where('priority', $filters['priority']);
+        }
+
+        if (! empty($filters['search'])) {
+            $search = trim((string) $filters['search']);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $perPage = min((int) ($filters['per_page'] ?? self::DEFAULT_PER_PAGE), self::MAX_PER_PAGE);
+        $perPage = $perPage > 0 ? $perPage : self::DEFAULT_PER_PAGE;
+
+        $tasks = $query
+            ->orderBy('position', 'asc')
+            ->orderBy('priority', 'desc')
+            ->orderBy('id', 'desc')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return [
+            'tasks' => $tasks,
+            'counts' => $this->counts($userId, $filters),
+        ];
+    }
+
+    private function counts(int $userId, array $filters): array
+    {
+        $query = Task::where('user_id', $userId);
+
+        if (isset($filters['priority'])) {
+            $query->where('priority', $filters['priority']);
+        }
+
+        if (! empty($filters['search'])) {
+            $search = trim((string) $filters['search']);
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        $counts = $query
+            ->selectRaw('status, count(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $byStatus = [];
+        foreach (TaskStatus::cases() as $status) {
+            $byStatus[$status->value] = (int) ($counts[$status->value] ?? 0);
+        }
+
+        return [
+            'all' => array_sum($byStatus),
+            ...$byStatus,
+        ];
     }
 
     public function getById(int $id)

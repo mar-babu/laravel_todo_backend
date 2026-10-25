@@ -22,9 +22,19 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $data = TaskResource::collection($this->service->all($request->all()));
+        $result = $this->service->all($request->only(['status', 'priority', 'search', 'page', 'per_page']));
+        $tasks = $result['tasks'];
 
-        return response()->json($data);
+        return response()->json([
+            'data' => TaskResource::collection($tasks->getCollection())->toArray($request),
+            'meta' => [
+                'current_page' => $tasks->currentPage(),
+                'last_page' => $tasks->lastPage(),
+                'per_page' => $tasks->perPage(),
+                'total' => $tasks->total(),
+                'counts' => $result['counts'],
+            ],
+        ]);
     }
 
     /**
